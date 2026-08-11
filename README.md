@@ -1,6 +1,6 @@
 # Furniture AR configurator prototype
 
-Open `index.html` through a local web server (for example, `npx serve .`) or deploy this folder to HTTPS hosting.
+Open `index.html` through a local web server (for example, `npx serve .`) or deploy this folder to HTTPS hosting. It currently opens an Astronaut model as an end-to-end AR test; this is intentional and visibly labelled as a demo asset.
 
 ## Add production assets
 
@@ -10,7 +10,7 @@ Place these exact pairs in `assets/`, exported from the same calibrated source m
 - `alder-standard.glb` and `alder-standard.usdz` — 220 × 92 × 76 cm
 - `alder-grand.glb` and `alder-grand.usdz` — 260 × 92 × 76 cm
 
-The demo intentionally has no substitute AR model: the AR button will activate only after valid assets are supplied. In the source 3D scene, use metres and keep geometry at exact real-world dimensions. Test every SKU against a tape-measure placement before launch.
+When the calibrated files are present, set `DEMO_MODE` to `false` in `app.js`. In the source 3D scene, use metres and keep geometry at exact real-world dimensions. Test every SKU against a tape-measure placement before launch.
 
 ## Integration points
 

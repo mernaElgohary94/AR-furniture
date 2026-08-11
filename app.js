@@ -14,6 +14,14 @@ const CATALOGUE = {
   ]
 };
 
+// This makes AR testable immediately. Set to false only after the calibrated files
+// named in README.md have been added to /assets and deployed over HTTPS.
+const DEMO_MODE = true;
+const DEMO_ASSET = {
+  glb: 'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
+  usdz: 'https://modelviewer.dev/shared-assets/models/Astronaut.usdz'
+};
+
 let selectedSize = CATALOGUE.sizes[1];
 let selectedColour = CATALOGUE.colours[0];
 const $ = (id) => document.getElementById(id);
@@ -34,13 +42,22 @@ function update() {
   const model = $('product-model');
   // Size selects an independently measured asset. Colour is passed as a selected SKU value;
   // production teams can swap material variants here or use model-viewer material APIs.
-  model.setAttribute('src', selectedSize.glb);
-  model.setAttribute('ios-src', selectedSize.usdz);
-  model.setAttribute('alt', `${selectedSize.name} Alder sofa in ${selectedColour.name}`);
+  model.setAttribute('src', DEMO_MODE ? DEMO_ASSET.glb : selectedSize.glb);
+  model.setAttribute('ios-src', DEMO_MODE ? DEMO_ASSET.usdz : selectedSize.usdz);
+  model.setAttribute('alt', DEMO_MODE ? 'Temporary AR test model' : `${selectedSize.name} Alder sofa in ${selectedColour.name}`);
+  $('viewer-note').innerHTML = DEMO_MODE
+    ? '<span class="status-dot"></span>Demo AR asset — replace before launch'
+    : '<span class="status-dot"></span>Shown at actual size in AR';
   renderOptions();
 }
 
 $('cart-button').onclick = () => alert(`Added: Alder Sofa — ${selectedSize.name}, ${selectedColour.name}.\nConnect this handler to your existing cart API.`);
 const model = $('product-model');
 if (!navigator.xr && !/iPhone|iPad|Android/i.test(navigator.userAgent)) $('fallback').hidden = false;
+model.addEventListener('ar-status', (event) => {
+  if (event.detail.status === 'failed') {
+    $('fallback').hidden = false;
+    $('fallback').textContent = 'AR could not start. Use HTTPS, test on a supported phone, and confirm the GLB/USDZ files load without a 404 error.';
+  }
+});
 update();
