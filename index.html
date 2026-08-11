@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#18231d" />
+    <title>Atelier — View in your room</title>
+    <link rel="preconnect" href="https://unpkg.com" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
+    <script defer src="./app.js"></script>
+  </head>
+  <body>
+    <main class="product-shell">
+      <section class="viewer-panel" aria-label="3D product preview">
+        <div class="brand">ATELIER</div>
+        <model-viewer id="product-model" alt="Configured Alder sofa" camera-controls auto-rotate shadow-intensity="1.2" exposure="0.9" ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed" ar-placement="floor" poster="./assets/sofa-poster.svg">
+          <button slot="ar-button" id="ar-button" class="ar-button">View at actual size in your room <span>↗</span></button>
+        </model-viewer>
+        <div class="viewer-note"><span class="status-dot"></span>Shown at actual size in AR</div>
+      </section>
+
+      <section class="details-panel">
+        <p class="eyebrow">MODULAR SEATING / 01</p>
+        <h1>Alder Sofa</h1>
+        <p class="intro">A softly structured sofa made for long evenings. Choose a size and fabric, then place the exact configuration in your space.</p>
+
+        <fieldset>
+          <legend>Size</legend>
+          <div id="size-options" class="option-grid"></div>
+        </fieldset>
+
+        <fieldset>
+          <legend>Fabric</legend>
+          <div id="colour-options" class="swatches"></div>
+          <p id="colour-name" class="selection-name"></p>
+        </fieldset>
+
+        <section class="spec-card" aria-live="polite">
+          <div><span>Width</span><strong id="width">—</strong></div>
+          <div><span>Depth</span><strong id="depth">—</strong></div>
+          <div><span>Height</span><strong id="height">—</strong></div>
+        </section>
+
+        <div class="ar-guidance">
+          <strong>Before you place it</strong>
+          <p>Scan a clear area of floor, then compare the on-screen dimensions with your room. Colour can vary with room lighting and your display.</p>
+        </div>
+
+        <button id="cart-button" class="cart-button">Add to basket <span id="price">—</span></button>
+        <p id="fallback" class="fallback" hidden>Your device doesn’t support room AR. You can still inspect the model in 3D above.</p>
+      </section>
+    </main>
+  </body>
+</html>
