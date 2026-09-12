@@ -88,9 +88,16 @@ async function applyPart(part) {
   try {
     const texture = await viewer().createTexture(textureSource(material));
     if (job !== requestId) return;
-    target.pbrMetallicRoughness.setBaseColorTexture(texture);
-    // Both production maps and the generated placeholder map already contain
-    // colour. A white multiplier avoids tinting the fabric twice.
+    const baseColorSlot = target.pbrMetallicRoughness.baseColorTexture;
+    // Replace the GLB's existing image in its texture slot. The supplied chair
+    // starts with an orange velvet map; changing only baseColorFactor leaves
+    // that map in place and multiplies it with the selected fabric.
+    if (baseColorSlot) {
+      baseColorSlot.setTexture(texture);
+    } else if (typeof target.pbrMetallicRoughness.setBaseColorTexture === 'function') {
+      target.pbrMetallicRoughness.setBaseColorTexture(texture);
+    }
+    // The selected texture now supplies all colour information.
     target.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 1]);
     if (part === 'upholstery') {
       // The source GLB's velvet material contains an orange sheen. Remove it
@@ -98,7 +105,9 @@ async function applyPart(part) {
       target.setSheenColorFactor([0, 0, 0]);
       target.setSheenRoughnessFactor(1);
     }
-    if (material.normal && target.normalTexture) target.normalTexture.setTexture(await viewer().createTexture(material.normal));
+    if (target.normalTexture) {
+      target.normalTexture.setTexture(material.normal ? await viewer().createTexture(material.normal) : null);
+    }
     if (material.roughness) target.pbrMetallicRoughness.setRoughnessTexture(await viewer().createTexture(material.roughness));
   } catch (error) {
     console.warn('Material texture could not load; showing selected colour instead.', error);

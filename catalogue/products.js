@@ -10,7 +10,7 @@ export const PRODUCTS = {
     dimensions: { width: '84 cm', depth: '68 cm', height: '76 cm' },
     model: '/assets/models/onda-chair/onda-chair.glb',
     parts: [
-      { id: 'upholstery', label: 'Upholstery', targets: ['fabric Mystere Mango Velvet', 'fabric Mystere Peacock Velvet'], families: ['Acrylic', 'Cashmere', 'Chenille', 'Blend', 'Cotton', 'Leather'], defaultMaterial: 'leather-tobacco' },
+      { id: 'upholstery', label: 'Upholstery', targets: ['fabric Mystere Mango Velvet', 'fabric Mystere Peacock Velvet'], families: ['Acrylic', 'Cashmere', 'Chenille', 'Blend', 'Cotton', 'Leather'], defaultMaterial: 'acrylic-fog' },
       { id: 'wood', label: 'Wood frame', targets: ['wood Brown', 'wood Black'], families: ['Wood'], defaultMaterial: 'wood-walnut' },
       { id: 'metal', label: 'Metal details', targets: ['metal'], families: ['Metal'], defaultMaterial: 'metal-black' }
     ]
