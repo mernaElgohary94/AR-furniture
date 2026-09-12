@@ -6,60 +6,71 @@
     <meta name="theme-color" content="#18231d" />
     <title>Atelier — View in your room</title>
     <link rel="preconnect" href="https://unpkg.com" />
-    <link rel="stylesheet" href="./styles.css" />
+    <link rel="stylesheet" href="/styles.css" />
     <script type="module" src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js"></script>
-    <script defer src="./app.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script type="module" src="/app.js"></script>
   </head>
-  <body>
+  <body class="configurator-page">
+    <header class="site-header">
+      <a class="brand" href="#">ATELIER</a>
+      <p class="header-title">Product configurator</p>
+      <button class="header-action" type="button" aria-label="Close configurator">Close <span>×</span></button>
+    </header>
     <main class="product-shell">
       <section class="viewer-panel" aria-label="3D product preview">
-        <div class="brand">ATELIER</div>
-
-        <!-- Product carousel: click a card to swap the loaded model-viewer src/ios-src.
-             PRODUCTS in app.js currently holds one entry (Alder Sofa); add more entries
-             to populate this with additional chairs/sofas/rugs. -->
-        <div id="product-carousel" class="product-carousel" aria-label="Choose a product"></div>
-
-        <model-viewer id="product-model" alt="Configured Alder sofa" camera-controls auto-rotate shadow-intensity="1.2" exposure="0.9" ar ar-modes="webxr scene-viewer quick-look" ar-scale="fixed" ar-placement="floor" poster="./assets/sofa-poster.svg">
+        <div class="viewer-toolbar">
+          <span>3D preview</span>
+          <span class="toolbar-hint">Drag to rotate · Scroll to zoom</span>
+        </div>
+        <div class="viewer-product"><span id="product-code">01C221</span><span id="product-type">Swivel armchair</span></div>
+        <model-viewer id="product-model" alt="Configured lounge chair" camera-controls auto-rotate shadow-intensity="1.2" exposure="0.95" ar ar-modes="webxr quick-look" ar-scale="fixed" ar-placement="floor" xr-environment>
           <button slot="ar-button" id="ar-button" class="ar-button">View at actual size in your room <span>↗</span></button>
         </model-viewer>
-        <div id="viewer-note" class="viewer-note"><span class="status-dot"></span>Demo AR asset — replace before launch</div>
+        <div id="viewer-note" class="viewer-note"><span class="status-dot"></span>Configured finish carries into AR</div>
       </section>
 
-      <section class="details-panel">
-        <p class="eyebrow" id="product-eyebrow">MODULAR SEATING / 01</p>
-        <h1 id="product-name">Alder Sofa</h1>
-        <p class="intro" id="product-intro">A softly structured sofa made for long evenings. Choose a size and fabric, then place the exact configuration in your space.</p>
+      <section class="details-panel config-panel">
+        <div class="config-header">
+          <p class="eyebrow" id="product-eyebrow">ARMCHAIRS / 01C221</p>
+          <h1 id="product-name">Onda Chair</h1>
+          <p class="intro" id="product-description">Configure each visible component, then see the exact selection in your space.</p>
+        </div>
 
-        <fieldset>
-          <legend>Size</legend>
-          <div id="size-options" class="option-grid"></div>
+        <fieldset class="config-section">
+          <legend><span>01</span> Select a part</legend>
+          <div id="part-options" class="part-options" role="tablist" aria-label="Chair parts"></div>
         </fieldset>
 
-        <!-- Per-part materials: one swatch row per material slot found on the loaded GLB
-             (e.g. Frame, Legs, Cushions — or Legs/Back/Seat on a chair-style product).
-             Rows are generated dynamically from viewer.model.materials, so this adapts
-             automatically once real, per-part-named assets replace the demo placeholder. -->
-        <fieldset>
-          <legend>Materials</legend>
-          <div id="material-options" class="material-options"></div>
-          <p id="material-note" class="selection-name"></p>
+        <fieldset class="config-section materials-section">
+          <legend><span>02</span> Select a material</legend>
+          <label class="search-wrap"><input id="material-search" type="search" placeholder="Search material or finish" autocomplete="off" /><span>⌕</span></label>
+          <div id="material-groups" class="material-groups"></div>
         </fieldset>
 
         <section class="spec-card" aria-live="polite">
-          <div><span>Width</span><strong id="width">—</strong></div>
-          <div><span>Depth</span><strong id="depth">—</strong></div>
-          <div><span>Height</span><strong id="height">—</strong></div>
+          <div><span>Width</span><strong id="product-width">84 cm</strong></div>
+          <div><span>Depth</span><strong id="product-depth">68 cm</strong></div>
+          <div><span>Height</span><strong id="product-height">76 cm</strong></div>
         </section>
 
         <div class="ar-guidance">
-          <strong>Before you place it</strong>
-          <p>Scan a clear area of floor, then compare the on-screen dimensions with your room. Colour can vary with room lighting and your display.</p>
+          <strong>View it at home</strong>
+          <p>Place this exact size in your room with your phone camera.</p>
         </div>
 
-        <button id="cart-button" class="cart-button">Add to basket <span id="price">—</span></button>
+        <div class="selected-summary" id="selected-summary"></div>
+        <button id="qr-button" class="cart-button">Continue on your phone <span>QR ↗</span></button>
         <p id="fallback" class="fallback" hidden>Your device doesn’t support room AR. You can still inspect the model in 3D above.</p>
       </section>
     </main>
+    <dialog id="qr-modal" class="qr-modal">
+      <button id="qr-close" class="qr-close" aria-label="Close">×</button>
+      <p class="eyebrow">YOUR CONFIGURATION</p>
+      <h2>Continue on mobile</h2>
+      <p>Scan this QR code to open the same chair, materials, and AR view on your phone.</p>
+      <div id="qr-code" class="qr-code"></div>
+      <a id="config-link" class="config-link" href="#">Open configured chair</a>
+    </dialog>
   </body>
 </html>

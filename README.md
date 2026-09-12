@@ -1,20 +1,27 @@
-# Furniture AR configurator prototype
+# Furniture AR catalogue configurator
 
-Open `index.html` through a local web server (for example, `npx serve .`) or deploy this folder to HTTPS hosting. It currently opens an Astronaut model as an end-to-end AR test; this is intentional and visibly labelled as a demo asset.
+One static web application serves the entire product catalogue. It does not need to be duplicated for every model.
 
-## Add production assets
+## Product URLs
 
-Place these exact pairs in `assets/`, exported from the same calibrated source model:
+- Onda Chair: /products/onda-chair
+- A configuration is carried in its URL, for example:
+  /products/onda-chair?upholstery=leather-tobacco&wood=wood-walnut&metal=metal-black
 
-- `alder-compact.glb` and `alder-compact.usdz` — 180 × 92 × 76 cm
-- `alder-standard.glb` and `alder-standard.usdz` — 220 × 92 × 76 cm
-- `alder-grand.glb` and `alder-grand.usdz` — 260 × 92 × 76 cm
+Use that route as the destination of any product-card or product-page button in the main website. On desktop, the configurator generates a QR code containing the same URL; on mobile, it opens the same model directly.
 
-When the calibrated files are present, set `DEMO_MODE` to `false` in `app.js`. In the source 3D scene, use metres and keep geometry at exact real-world dimensions. Test every SKU against a tape-measure placement before launch.
+## Project map
 
-## Integration points
+    assets/models/<product-slug>/<product>.glb    3D geometry, one GLB per physical model or size
+    assets/materials/<material-id>/               texture files for shared material options
+    catalogue/products.js                         product models, dimensions, parts and allowed materials
+    catalogue/materials.js                        one reusable material library
+    docs/ADD-A-PRODUCT.md                         product and material onboarding procedure
 
-- Replace the `alert()` in `app.js` with the web app's cart mutation.
-- Replace prices and catalogue information with your product API response.
-- For material-specific AR, export a GLB/USDZ pair per colour, or map the selected fabric to a material variant.
-- Keep `ar-scale="fixed"`; this protects the actual-size promise.
+## Deploy
+
+Set Vercel Root Directory to outputs/furniture-ar-demo  2. Do not set a build command or output directory. The Vercel route configuration allows direct visits to /products/<slug>.
+
+## Important
+
+Only create additional GLB files when furniture geometry or physical dimensions change. Material selections are applied dynamically from the shared material library.

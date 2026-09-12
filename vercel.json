@@ -1,5 +1,8 @@
 
 {
+  "rewrites": [
+    { "source": "/products/(.*)", "destination": "/index.html" }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)\\.usdz",
