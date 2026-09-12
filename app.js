@@ -118,6 +118,17 @@ function openQR() {
   if (window.QRCode) new QRCode($('qr-code'), { text: url, width: 190, height: 190, correctLevel: QRCode.CorrectLevel.M });
   $('qr-modal').showModal();
 }
+async function launchAR(button) {
+  try {
+    button.disabled = true;
+    await viewer().activateAR();
+    button.disabled = false;
+  } catch (error) {
+    button.disabled = false;
+    $('fallback').hidden = false;
+    $('fallback').textContent = 'AR could not start on this device. Open this page in Safari on iPhone/iPad or Chrome on Android, over HTTPS.';
+  }
+}
 function prepareARHandoff() {
   if (!isARHandoff) return;
   const selectionText = PARTS.map((part) => {
@@ -134,25 +145,18 @@ function prepareARHandoff() {
   }
 }
 $('material-search').addEventListener('input', renderMaterials);
-$('qr-button').onclick = openQR;
+if (isMobileDevice) {
+  $('qr-button').innerHTML = 'Open in AR <span>↗</span>';
+  $('qr-button').onclick = () => launchAR($('qr-button'));
+} else {
+  $('qr-button').innerHTML = 'Open in AR <span>QR ↗</span>';
+  $('qr-button').onclick = openQR;
+}
 $('qr-close').onclick = () => $('qr-modal').close();
-$('start-ar').onclick = async () => {
-  try {
-    $('start-ar').disabled = true;
-    await viewer().activateAR();
-    $('start-ar').disabled = false;
-  } catch (error) {
-    $('start-ar').disabled = false;
-    $('fallback').hidden = false;
-    $('fallback').textContent = 'AR could not start on this device. Try opening this page in Safari on iPhone/iPad or Chrome on Android.';
-  }
-};
+$('start-ar').onclick = () => launchAR($('start-ar'));
 viewer().addEventListener('load', async () => { await applyAllParts(); prepareARHandoff(); });
 viewer().addEventListener('ar-status', (event) => { if (event.detail.status === 'failed') { $('fallback').hidden = false; $('fallback').textContent = 'AR could not start. Use HTTPS and a compatible phone browser.'; } });
 setConfigurationFromURL();
-// A phone should never be asked to scan a QR code. It goes straight to the
-// one-tap AR handoff with the same selected configuration instead.
-if (isMobileDevice && !isARHandoff) location.replace(arHandoffURL());
 renderProductDetails();
 viewer().setAttribute('src', activeProduct.model);
 renderParts(); renderMaterials(); renderSummary();
