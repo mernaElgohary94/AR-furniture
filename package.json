@@ -1,0 +1,10 @@
+{
+  "name": "atelier-furniture-ar",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static product configurator with native mobile AR handoff.",
+  "scripts": {
+    "dev": "npx serve .",
+    "start": "npx serve ."
+  }
+}
