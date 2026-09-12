@@ -8,6 +8,7 @@ function productSlugFromURL() {
 
 const activeProduct = PRODUCTS[productSlugFromURL()] || PRODUCTS['onda-chair'];
 const PARTS = activeProduct.parts;
+const isARHandoff = new URLSearchParams(location.search).get('ar') === '1';
 const $ = (id) => document.getElementById(id);
 const viewer = () => $('product-model');
 let activePart = PARTS[0].id;
@@ -41,6 +42,11 @@ function configurationURL() {
   return url.toString();
 }
 function syncURL() { history.replaceState({}, '', configurationURL()); }
+function arHandoffURL() {
+  const url = new URL(configurationURL());
+  url.searchParams.set('ar', '1');
+  return url.toString();
+}
 function renderParts() {
   $('part-options').innerHTML = PARTS.map((part) => {
     const material = materialById(selections[part.id]);
@@ -106,15 +112,34 @@ function renderProductDetails() {
   viewer().setAttribute('alt', 'Configured ' + activeProduct.name);
 }
 function openQR() {
-  const url = configurationURL(); $('config-link').href = url; $('config-link').textContent = url.replace(/^https?:\/\//, '');
+  const url = arHandoffURL(); $('config-link').href = url; $('config-link').textContent = url.replace(/^https?:\/\//, '');
   $('qr-code').replaceChildren();
   if (window.QRCode) new QRCode($('qr-code'), { text: url, width: 190, height: 190, correctLevel: QRCode.CorrectLevel.M });
   $('qr-modal').showModal();
 }
+function prepareARHandoff() {
+  if (!isARHandoff) return;
+  const selectionText = PARTS.map((part) => {
+    const material = materialById(selections[part.id]);
+    return part.label + ': ' + material.name;
+  }).join(' · ');
+  $('ar-handoff-summary').textContent = activeProduct.name + ' — ' + selectionText;
+  $('ar-handoff').hidden = false;
+  $('start-ar').disabled = false;
+}
 $('material-search').addEventListener('input', renderMaterials);
 $('qr-button').onclick = openQR;
 $('qr-close').onclick = () => $('qr-modal').close();
-viewer().addEventListener('load', applyAllParts);
+$('start-ar').onclick = () => {
+  try {
+    const launched = viewer().activateAR();
+    if (launched && typeof launched.catch === 'function') launched.catch(() => { $('fallback').hidden = false; });
+  } catch (error) {
+    $('fallback').hidden = false;
+    $('fallback').textContent = 'AR could not start on this device. Try opening this page in Safari on iPhone/iPad or Chrome on Android.';
+  }
+};
+viewer().addEventListener('load', async () => { await applyAllParts(); prepareARHandoff(); });
 viewer().addEventListener('ar-status', (event) => { if (event.detail.status === 'failed') { $('fallback').hidden = false; $('fallback').textContent = 'AR could not start. Use HTTPS and a compatible phone browser.'; } });
 setConfigurationFromURL();
 renderProductDetails();
