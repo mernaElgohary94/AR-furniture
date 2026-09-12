@@ -89,8 +89,15 @@ async function applyPart(part) {
     const texture = await viewer().createTexture(textureSource(material));
     if (job !== requestId) return;
     target.pbrMetallicRoughness.setBaseColorTexture(texture);
-    // Real base-colour maps bring their own colour; placeholder maps do not.
-    if (material.baseColor) target.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 1]);
+    // Both production maps and the generated placeholder map already contain
+    // colour. A white multiplier avoids tinting the fabric twice.
+    target.pbrMetallicRoughness.setBaseColorFactor([1, 1, 1, 1]);
+    if (part === 'upholstery') {
+      // The source GLB's velvet material contains an orange sheen. Remove it
+      // for configurator fabrics so the selected map determines the colour.
+      target.setSheenColorFactor([0, 0, 0]);
+      target.setSheenRoughnessFactor(1);
+    }
     if (material.normal && target.normalTexture) target.normalTexture.setTexture(await viewer().createTexture(material.normal));
     if (material.roughness) target.pbrMetallicRoughness.setRoughnessTexture(await viewer().createTexture(material.roughness));
   } catch (error) {
