@@ -9,6 +9,7 @@ function productSlugFromURL() {
 const activeProduct = PRODUCTS[productSlugFromURL()] || PRODUCTS['onda-chair'];
 const PARTS = activeProduct.parts;
 const isARHandoff = new URLSearchParams(location.search).get('ar') === '1';
+const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 const $ = (id) => document.getElementById(id);
 const viewer = () => $('product-model');
 let activePart = PARTS[0].id;
@@ -125,16 +126,23 @@ function prepareARHandoff() {
   }).join(' · ');
   $('ar-handoff-summary').textContent = activeProduct.name + ' — ' + selectionText;
   $('ar-handoff').hidden = false;
-  $('start-ar').disabled = false;
+  if (viewer().canActivateAR) {
+    $('start-ar').disabled = false;
+  } else {
+    $('start-ar').disabled = true;
+    $('ar-handoff-summary').textContent = 'AR is not available in this browser. Open this link in Safari on iPhone/iPad or Chrome on an ARCore-compatible Android phone.';
+  }
 }
 $('material-search').addEventListener('input', renderMaterials);
 $('qr-button').onclick = openQR;
 $('qr-close').onclick = () => $('qr-modal').close();
-$('start-ar').onclick = () => {
+$('start-ar').onclick = async () => {
   try {
-    const launched = viewer().activateAR();
-    if (launched && typeof launched.catch === 'function') launched.catch(() => { $('fallback').hidden = false; });
+    $('start-ar').disabled = true;
+    await viewer().activateAR();
+    $('start-ar').disabled = false;
   } catch (error) {
+    $('start-ar').disabled = false;
     $('fallback').hidden = false;
     $('fallback').textContent = 'AR could not start on this device. Try opening this page in Safari on iPhone/iPad or Chrome on Android.';
   }
@@ -142,6 +150,9 @@ $('start-ar').onclick = () => {
 viewer().addEventListener('load', async () => { await applyAllParts(); prepareARHandoff(); });
 viewer().addEventListener('ar-status', (event) => { if (event.detail.status === 'failed') { $('fallback').hidden = false; $('fallback').textContent = 'AR could not start. Use HTTPS and a compatible phone browser.'; } });
 setConfigurationFromURL();
+// A phone should never be asked to scan a QR code. It goes straight to the
+// one-tap AR handoff with the same selected configuration instead.
+if (isMobileDevice && !isARHandoff) location.replace(arHandoffURL());
 renderProductDetails();
 viewer().setAttribute('src', activeProduct.model);
 renderParts(); renderMaterials(); renderSummary();
