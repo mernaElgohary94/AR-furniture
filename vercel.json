@@ -1,2 +1,17 @@
 
-{ "rewrites": [{ "source": "/(.*)", "destination": "/" }] }
+{
+  "headers": [
+    {
+      "source": "/assets/(.*)\\.usdz",
+      "headers": [
+        { "key": "Content-Type", "value": "model/vnd.usdz+zip" }
+      ]
+    },
+    {
+      "source": "/assets/(.*)\\.glb",
+      "headers": [
+        { "key": "Content-Type", "value": "model/gltf-binary" }
+      ]
+    }
+  ]
+}

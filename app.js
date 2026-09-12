@@ -46,7 +46,7 @@ const PRODUCTS = [
 
 // This makes AR testable immediately. Set to false only after the calibrated files
 // named in README.md have been added to /assets and deployed over HTTPS.
-const DEMO_MODE = true;
+const DEMO_MODE = false;
 const DEMO_ASSET = {
   glb: 'https://modelviewer.dev/shared-assets/models/Astronaut.glb',
   usdz: 'https://modelviewer.dev/shared-assets/models/Astronaut.usdz'
